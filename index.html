@@ -1,0 +1,42 @@
+    <div id="root">
+
+    </div>
+    <div id="root-chatbot">
+    </div>
+    <script>
+        function loadChatbot() {
+            const prodOrigin = 'https://vidalhealthtpa.com';
+
+            let repo;
+            if (window.location.origin === prodOrigin) {
+                repo = 'chatbot-prod';
+            } else {
+                repo = 'chatbot-build';
+            }
+
+            const owner = 'vidal-health';
+            const scriptFileName = 'main.js';
+            const styleFileName = 'main.css';
+
+            fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`)
+                .then(response => response.json())
+                .then(data => {
+                    const scriptUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${data.tag_name}/${scriptFileName}`;
+                    const styleUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${data.tag_name}/${styleFileName}`;
+
+                    const scriptElement = document.createElement('script');
+                    scriptElement.src = scriptUrl;
+                    document.head.appendChild(scriptElement);
+
+                    const linkElement = document.createElement('link');
+                    linkElement.rel = 'stylesheet';
+                    linkElement.href = styleUrl;
+                    document.head.appendChild(linkElement);
+                })
+                .catch(error => {
+                    console.error('Failed to load the chatbot:', error);
+                });
+        }
+        document.addEventListener('DOMContentLoaded', loadChatbot);
+
+    </script>
